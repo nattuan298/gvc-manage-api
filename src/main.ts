@@ -23,4 +23,5 @@ async function bootstrap() {
   const timeout = 1000 * 60 * 3;
   server.setTimeout(timeout);
 }
+console.log('a');
 bootstrap();
