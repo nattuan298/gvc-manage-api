@@ -3,7 +3,6 @@ import * as mongoosePaginate from 'mongoose-paginate-v2';
 import {
   Status,
   Gender,
-  Generation,
   Role,
   CreateRequest,
 } from 'src/common/common.constants';
@@ -13,7 +12,6 @@ const USER_MODEL = 'users';
 const UserSchema = new mongoose.Schema(
   {
     firstName: String,
-    middleName: String,
     lastName: String,
     status: {
       type: String,
@@ -29,10 +27,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
-    generation: {
-      type: String,
-      enum: Object.values(Generation),
-    },
+    generation: String,
     gender: {
       type: String,
       enum: Object.values(Gender),
