@@ -19,8 +19,6 @@ async function bootstrap() {
   // Use global validation pipe.
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
-  const server = await app.listen(3000);
-  const timeout = 1000 * 60 * 3;
-  server.setTimeout(timeout);
+  await app.listen(3000);
 }
 bootstrap();
