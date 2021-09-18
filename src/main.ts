@@ -19,6 +19,6 @@ async function bootstrap() {
   // Use global validation pipe.
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
-  await app.listen(3000);
+  app.listen(3000);
 }
 bootstrap();
