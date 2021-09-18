@@ -2,21 +2,19 @@ import { Document } from 'mongoose';
 import {
   CreateRequest,
   Gender,
-  Generation,
   Role,
   Status,
 } from 'src/common/common.constants';
 export interface IUser {
-  firstName: string;
-  middleName: string;
-  lastName: string;
   username: string;
   password: string;
   email: string;
+  firstName: string;
+  lastName: string;
   phoneNumber: string;
-  generation: Generation;
+  generation: string;
   gender: Gender;
-  dateOfBirth: string;
+  dateOfBirth: Date;
   status?: Status;
   createRequest?: CreateRequest;
   roles?: Role;

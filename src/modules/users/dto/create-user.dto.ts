@@ -7,7 +7,7 @@ import {
   IsNumberString,
   IsString,
 } from 'class-validator';
-import { Gender, Generation } from 'src/common/common.constants';
+import { Gender } from 'src/common/common.constants';
 
 export class CreateUserDto {
   @IsString()
@@ -39,11 +39,10 @@ export class CreateUserDto {
   @IsNumberString()
   phoneNumber: string;
 
-  @IsEnum(Generation)
   @IsString()
-  generation: Generation;
+  generation: string;
 
-  @IsEnum(Generation)
+  @IsEnum(Gender)
   @IsString()
   gender: Gender;
 
