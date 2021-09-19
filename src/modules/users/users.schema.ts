@@ -13,16 +13,9 @@ const UserSchema = new mongoose.Schema(
   {
     firstName: String,
     lastName: String,
-    status: {
-      type: String,
-      enum: Object.values(Status),
-    },
     username: String,
     password: String,
-    email: {
-      type: String,
-      unique: true,
-    },
+    email: String,
     phoneNumber: {
       type: String,
       default: '',
@@ -33,18 +26,22 @@ const UserSchema = new mongoose.Schema(
       enum: Object.values(Gender),
     },
     dateOfBirth: Date,
-    roles: {
+    salt: String,
+    status: {
+      type: String,
+      enum: Object.values(Status),
+      default: Status.InActive,
+    },
+    role: {
       type: String,
       enum: Object.values(Role),
       default: Role.User,
     },
-    request: {
+    createRequest: {
       type: String,
       enum: Object.values(CreateRequest),
-      default: CreateRequest.Reject,
     },
-    createdAt: Date,
-    updatedAt: Date,
+    updatedPasswordAt: Date,
   },
   {
     timestamps: true,
