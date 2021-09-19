@@ -1,11 +1,14 @@
 import {
+  IsAlphanumeric,
   IsDateString,
   IsDefined,
   IsEmail,
   IsEnum,
   IsNotEmpty,
   IsNumberString,
+  IsPhoneNumber,
   IsString,
+  MinLength,
 } from 'class-validator';
 import { Gender } from 'src/common/common.constants';
 
@@ -18,12 +21,15 @@ export class UserSignUpDto {
 
   @IsNotEmpty()
   @IsDefined()
+  @MinLength(6)
   @IsString()
   username: string;
 
   @IsNotEmpty()
   @IsDefined()
   @IsString()
+  @MinLength(8)
+  @IsAlphanumeric()
   password: string;
 
   @IsNotEmpty()
@@ -33,7 +39,8 @@ export class UserSignUpDto {
   email: string;
 
   @IsNotEmpty()
-  @IsNumberString()
+  @IsDefined()
+  @IsPhoneNumber()
   phoneNumber: string;
 
   @IsString()

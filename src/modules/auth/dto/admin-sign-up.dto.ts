@@ -1,19 +1,24 @@
 import {
+  IsAlphanumeric,
   IsDefined,
   IsEmail,
   IsNotEmpty,
-  IsNumberString,
+  IsPhoneNumber,
   IsString,
+  MinLength,
 } from 'class-validator';
 export class AdminSignUpDto {
   @IsNotEmpty()
   @IsDefined()
+  @MinLength(6)
   @IsString()
   username: string;
 
   @IsNotEmpty()
   @IsDefined()
   @IsString()
+  @MinLength(8)
+  @IsAlphanumeric()
   password: string;
 
   @IsNotEmpty()
@@ -23,6 +28,7 @@ export class AdminSignUpDto {
   email: string;
 
   @IsNotEmpty()
-  @IsNumberString()
+  @IsDefined()
+  @IsPhoneNumber()
   phoneNumber: string;
 }

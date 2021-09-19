@@ -1,4 +1,5 @@
 import {
+  IsAlphanumeric,
   IsDateString,
   IsDefined,
   IsEmail,
@@ -6,6 +7,7 @@ import {
   IsNotEmpty,
   IsNumberString,
   IsString,
+  MinLength,
 } from 'class-validator';
 import { Gender } from 'src/common/common.constants';
 
@@ -18,12 +20,15 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsDefined()
+  @MinLength(8)
   @IsString()
   username: string;
 
   @IsNotEmpty()
   @IsDefined()
   @IsString()
+  @MinLength(8)
+  @IsAlphanumeric()
   password: string;
 
   @IsNotEmpty()

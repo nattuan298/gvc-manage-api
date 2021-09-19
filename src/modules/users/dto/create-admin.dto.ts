@@ -1,20 +1,25 @@
 import {
+  IsAlphanumeric,
   IsDefined,
   IsEmail,
   IsNotEmpty,
   IsNumberString,
   IsString,
+  MinLength,
 } from 'class-validator';
 
 export class CreateAdminDto {
   @IsNotEmpty()
   @IsDefined()
+  @MinLength(6)
   @IsString()
   username: string;
 
   @IsNotEmpty()
   @IsDefined()
   @IsString()
+  @MinLength(6)
+  @IsAlphanumeric()
   password: string;
 
   @IsNotEmpty()
