@@ -18,4 +18,5 @@ export enum Role {
 export enum CreateRequest {
   Reject = 'Reject',
   Approve = 'Approve',
+  Wait = 'Wait',
 }

@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { Gender } from 'src/common/common.constants';
 
-export class CreateUserDto {
+export class UserSignUpDto {
   @IsString()
   firstName: string;
 

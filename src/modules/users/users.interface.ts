@@ -17,9 +17,8 @@ export interface IUser {
   dateOfBirth: Date;
   status?: Status;
   createRequest?: CreateRequest;
-  roles?: Role;
-  createdAt?: Date;
-  updatedAt?: Date;
+  role?: Role;
+  updatedPasswordAt?: Date;
 }
 
 export type UserDocument = IUser & Document;

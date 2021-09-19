@@ -1,21 +1,12 @@
 import {
-  IsDateString,
   IsDefined,
   IsEmail,
-  IsEnum,
   IsNotEmpty,
   IsNumberString,
   IsString,
 } from 'class-validator';
-import { Gender } from 'src/common/common.constants';
 
-export class CreateUserDto {
-  @IsString()
-  firstName: string;
-
-  @IsString()
-  lastName: string;
-
+export class CreateAdminDto {
   @IsNotEmpty()
   @IsDefined()
   @IsString()
@@ -35,15 +26,4 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsNumberString()
   phoneNumber: string;
-
-  @IsString()
-  generation: string;
-
-  @IsEnum(Gender)
-  @IsString()
-  gender: Gender;
-
-  @IsString()
-  @IsDateString()
-  dateOfBirth: Date;
 }
