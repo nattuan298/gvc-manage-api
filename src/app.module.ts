@@ -19,28 +19,28 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
         useCreateIndex: true,
       }),
     }),
-    MailerModule.forRootAsync({
-      useFactory: () => ({
-        transport: {
-          host: 'smtp.gmail.com',
-          port: 456,
-          auth: {
-            user: process.env.MAIL_USERNAME,
-            pass: process.env.MAIL_PASSWORD,
-          },
-          defaults: {
-            from: '"No Reply" <ntuan2908@localhost>',
-          },
-        },
-        template: {
-          dir: process.cwd() + '/template/',
-          adapter: new HandlebarsAdapter(),
-          options: {
-            strict: true,
-          },
-        },
-      }),
-    }),
+    // MailerModule.forRootAsync({
+    //   useFactory: () => ({
+    //     transport: {
+    //       host: 'smtp.gmail.com',
+    //       port: 456,
+    //       auth: {
+    //         user: process.env.MAIL_USERNAME,
+    //         pass: process.env.MAIL_PASSWORD,
+    //       },
+    //       defaults: {
+    //         from: '"No Reply" <ntuan2908@localhost>',
+    //       },
+    //     },
+    //     template: {
+    //       dir: process.cwd() + '/template/',
+    //       adapter: new HandlebarsAdapter(),
+    //       options: {
+    //         strict: true,
+    //       },
+    //     },
+    //   }),
+    // }),
     UsersModule,
     AuthModule,
   ],

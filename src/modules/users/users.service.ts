@@ -4,7 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDocument } from './users.interface';
 import { USER_MODEL } from './users.schema';
-import { MailerService } from '@nestjs-modules/mailer';
+// import { MailerService } from '@nestjs-modules/mailer';
 import { PaginateModel } from 'mongoose-paginate-v2';
 import * as bcrypt from 'bcrypt';
 import { paginationTransformer } from 'src/common/helpers';
@@ -19,8 +19,7 @@ import { FindUserDto } from './dto/find-user.dto';
 export class UsersService {
   constructor(
     @InjectModel(USER_MODEL)
-    private readonly userModel: PaginateModel<UserDocument>,
-    private readonly mailerService: MailerService,
+    private readonly userModel: PaginateModel<UserDocument>, // private readonly mailerService: MailerService,
   ) {}
 
   async userSignUp(createUserDto: CreateUserDto) {
@@ -130,20 +129,20 @@ export class UsersService {
     return this.userModel.findOne({ email, username });
   }
 
-  async sendMailToUser(email: string, options): Promise<any> {
-    return this.mailerService
-      .sendMail({
-        to: email,
-        from: process.env.MAIL_USERNAME,
-        subject: options.subject,
-        template: `./${options.template}`,
-        context: options.context,
-      })
-      .then((res) => {
-        console.log('Send mail success to user');
-      })
-      .catch((err) => {
-        console.log('Error while sending mail to carrier', err);
-      });
-  }
+  // async sendMailToUser(email: string, options): Promise<any> {
+  //   return this.mailerService
+  //     .sendMail({
+  //       to: email,
+  //       from: process.env.MAIL_USERNAME,
+  //       subject: options.subject,
+  //       template: `./${options.template}`,
+  //       context: options.context,
+  //     })
+  //     .then((res) => {
+  //       console.log('Send mail success to user');
+  //     })
+  //     .catch((err) => {
+  //       console.log('Error while sending mail to carrier', err);
+  //     });
+  // }
 }
