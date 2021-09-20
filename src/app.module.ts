@@ -13,7 +13,6 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     MongooseModule.forRootAsync({
       useFactory: () => ({
         uri: process.env.MONGODB_URI,
-        // 'mongodb+srv://test:test@cluster0.8fnqs.mongodb.net/gvc-manage?retryWrites=true&w=majority',
         useNewUrlParser: true,
         useFindAndModify: false,
         useCreateIndex: true,
@@ -29,7 +28,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     //         pass: process.env.MAIL_PASSWORD,
     //       },
     //       defaults: {
-    //         from: '"No Reply" <ntuan2908@localhost>',
+    //         from: `"No Reply" <${process.env.MAIL_USERNAME}>`,
     //       },
     //     },
     //     template: {

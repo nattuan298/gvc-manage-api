@@ -52,6 +52,9 @@ export class UsersService {
     //   },
     // };
     // await this.sendMailToUser(createUserDto.email, options);
+    return {
+      message: `Thanks for signing up. Please wait for admin to approve your account.`,
+    };
   }
 
   async adminSignUp(createAdminDto: CreateAdminDto) {
