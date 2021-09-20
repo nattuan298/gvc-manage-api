@@ -32,7 +32,12 @@ export class AdminController {
     return this.usersService.findAllUser(findUserDto);
   }
 
-  @Put('user/:id')
+  @Get('users/:id')
+  findOne(@Param() commonIdParams: CommonIdParams) {
+    return this.usersService.findOne(commonIdParams.id);
+  }
+
+  @Put('users/:id')
   updateRequest(
     @Param() commonIdParams: CommonIdParams,
     @Body() createRequestDto: CreateRequestDto,
@@ -41,5 +46,10 @@ export class AdminController {
       commonIdParams.id,
       createRequestDto,
     );
+  }
+
+  @Delete('users/:id')
+  delete(@Param() commonIdParams: CommonIdParams) {
+    return this.usersService.delete(commonIdParams.id);
   }
 }
