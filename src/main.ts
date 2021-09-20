@@ -2,6 +2,8 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +20,8 @@ async function bootstrap() {
 
   // Use global validation pipe.
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
+
+  app.enableCors();
 
   app.listen(process.env.PORT || 3000);
 }

@@ -10,7 +10,6 @@ import * as bcrypt from 'bcrypt';
 import { paginationTransformer } from 'src/common/helpers';
 import { UserResponseMessage } from './user.constant';
 import { CreateRequest, Role, Status } from 'src/common/common.constants';
-import { Stats } from 'fs';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { CreateRequestDto } from './dto/update-request.dto';
 import { FindUserDto } from './dto/find-user.dto';
