@@ -1,4 +1,9 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -77,7 +82,11 @@ export class UsersService {
   }
 
   async findOne(id: string) {
-    return await this.userModel.findOne({ _id: id });
+    const user = await this.userModel.findOne({ _id: id });
+    if (!user) {
+      throw new NotFoundException(UserResponseMessage.NotFound);
+    }
+    return user;
   }
 
   async findAllUser(findUserDto: FindUserDto) {
@@ -97,6 +106,13 @@ export class UsersService {
     }
     const users = await this.userModel.paginate(filters, options);
     return paginationTransformer(users);
+  }
+
+  async delete(id: string) {
+    const user = await this.userModel.findByIdAndDelete(id);
+    if (!user) {
+      throw new NotFoundException(UserResponseMessage.NotFound);
+    }
   }
 
   async updateCreateRequest(id: string, createRequestDto: CreateRequestDto) {
