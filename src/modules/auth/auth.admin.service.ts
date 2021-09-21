@@ -36,11 +36,10 @@ export class AuthAdminService {
             role: user.role,
           };
           const jwtAccessToken = await this.jwtService.signAsync(payload);
-          const { _id, firstName, lastName, email, username } = user;
+          const { firstName, lastName, email, username } = user;
           return {
             jwtAccessToken,
             user: {
-              _id,
               firstName,
               lastName,
               username,

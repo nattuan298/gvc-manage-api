@@ -17,7 +17,7 @@ import { UserResponseMessage } from './user.constant';
 import { CreateRequest, Role, Status } from 'src/common/common.constants';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { CreateRequestDto } from './dto/update-request.dto';
-import { FindUserDto } from './dto/find-user.dto';
+import { AdminFindUserDto } from './dto/find-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -89,11 +89,13 @@ export class UsersService {
     return user;
   }
 
-  async findAllUser(findUserDto: FindUserDto) {
+  async adminFindAllUser(findUserDto: AdminFindUserDto) {
     const filters: Record<string, unknown> = {};
     const options: Record<string, unknown> = {};
     options.page = findUserDto.page;
     options.limit = findUserDto.pageSize;
+    options.sort = { createdAt: -1 };
+    filters.role = Role.User;
     if (findUserDto.status) {
       filters.status = findUserDto.status;
     }
@@ -106,6 +108,14 @@ export class UsersService {
     }
     const users = await this.userModel.paginate(filters, options);
     return paginationTransformer(users);
+  }
+
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.userModel.findById(id);
+    if (!user) {
+      throw new NotFoundException(UserResponseMessage.NotFound);
+    }
+    await this.userModel.updateOne({ _id: id }, updateUserDto);
   }
 
   async delete(id: string) {
