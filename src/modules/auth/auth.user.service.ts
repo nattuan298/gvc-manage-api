@@ -27,9 +27,6 @@ export class AuthUserService {
       if (user.createRequest === CreateRequest.Reject) {
         throw new BadRequestException(UserSignInResponseMessage.Reject);
       }
-      // if (user.status === Status.InActive) {
-      //   throw new BadRequestException(UserSignInResponseMessage.Verify);
-      // }
       if (user.createRequest === CreateRequest.Approve) {
         const checkPassword = await this.usersService.validatePassword(
           password,
@@ -40,9 +37,18 @@ export class AuthUserService {
             email: user.email,
             username: user.username,
             role: user.role,
+            salt: user.salt,
+            updatedPasswordAt: user.updatedPasswordAt,
           };
           const jwtAccessToken = await this.jwtService.signAsync(payload);
-          const { _id, firstName, lastName, email, username } = user;
+          const {
+            _id,
+            firstName,
+            lastName,
+            email,
+            username,
+            updatedPasswordAt,
+          } = user;
           return {
             jwtAccessToken,
             user: {
@@ -51,6 +57,7 @@ export class AuthUserService {
               lastName,
               username,
               email,
+              updatedPasswordAt,
             },
           };
         }

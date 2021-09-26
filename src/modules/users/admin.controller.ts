@@ -13,16 +13,19 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Role } from 'src/common/common.constants';
 import { CommonIdParams } from 'src/common/common.dto';
-import { RoleGuard } from 'src/common/guards/role.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { JwtGuard } from 'src/common/guards/jwt-guard';
+import { RolesGuard } from 'src/common/guards/role.guard';
 import { AdminFindUserDto } from './dto/find-user.dto';
 import { CreateRequestDto } from './dto/update-request.dto';
 import { UsersService } from './users.service';
 
 @ApiTags('admin')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('verifyAdmin'), RoleGuard)
-@SetMetadata('roles', ['Admin'])
+@Roles(Role.Admin)
+@UseGuards(JwtGuard, RolesGuard)
 @Controller('admin')
 export class AdminController {
   constructor(private readonly usersService: UsersService) {}
@@ -32,12 +35,12 @@ export class AdminController {
     return this.usersService.adminFindAllUser(findUserDto);
   }
 
-  @Get('users/:id')
+  @Get('user/:id')
   findOne(@Param() commonIdParams: CommonIdParams) {
-    return this.usersService.findOne(commonIdParams.id);
+    return this.usersService.findById(commonIdParams.id);
   }
 
-  @Put('users/:id')
+  @Put('user-request/:id')
   updateRequest(
     @Param() commonIdParams: CommonIdParams,
     @Body() createRequestDto: CreateRequestDto,
@@ -48,7 +51,7 @@ export class AdminController {
     );
   }
 
-  @Delete('users/:id')
+  @Delete('user/:id')
   delete(@Param() commonIdParams: CommonIdParams) {
     return this.usersService.delete(commonIdParams.id);
   }

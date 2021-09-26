@@ -42,6 +42,7 @@ const UserSchema = new mongoose.Schema(
       enum: Object.values(CreateRequest),
     },
     updatedPasswordAt: Date,
+    code: String,
   },
   {
     timestamps: true,

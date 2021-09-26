@@ -8,6 +8,7 @@ export enum Status {
 export enum Gender {
   Male = 'Male',
   Female = 'Female',
+  Other = 'Other',
 }
 
 export enum Role {

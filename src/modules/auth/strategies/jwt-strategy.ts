@@ -3,13 +3,10 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import IJwtPayload from '../payloads/jwt-payload';
 import { UsersService } from '../../users/users.service';
-import { Role, Status } from '../../../common/common.constants';
+import { Status } from '../../../common/common.constants';
 
 @Injectable()
-export class VerifyAdminStrategy extends PassportStrategy(
-  Strategy,
-  'verifyAdmin',
-) {
+export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly usersService: UsersService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -19,13 +16,13 @@ export class VerifyAdminStrategy extends PassportStrategy(
   }
 
   async validate(payload: IJwtPayload): Promise<IJwtPayload> {
-    const { email, username } = payload;
+    const { email, username, salt } = payload;
     const user = await this.usersService.validateUser(email, username);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Invalid Token');
     }
-    if (user.status !== Status.Active && user.role !== Role.Admin) {
-      throw new UnauthorizedException();
+    if (user.status !== Status.Active && user.salt !== salt) {
+      throw new UnauthorizedException('Session Expired');
     }
     return payload;
   }
