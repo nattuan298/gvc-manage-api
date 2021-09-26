@@ -34,16 +34,27 @@ export class AuthAdminService {
             email: user.email,
             username: user.username,
             role: user.role,
+            salt: user.salt,
+            updatedPasswordAt: user.updatedPasswordAt,
           };
           const jwtAccessToken = await this.jwtService.signAsync(payload);
-          const { firstName, lastName, email, username } = user;
+          const {
+            _id,
+            firstName,
+            lastName,
+            email,
+            username,
+            updatedPasswordAt,
+          } = user;
           return {
             jwtAccessToken,
             user: {
+              _id,
               firstName,
               lastName,
               username,
               email,
+              updatedPasswordAt,
             },
           };
         }

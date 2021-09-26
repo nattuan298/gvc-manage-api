@@ -3,13 +3,19 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  SendVerifyCode,
+  UpdatePasswordDto,
+  UpdateUserDto,
+  VerifyEmail,
+} from './dto/update-user.dto';
 import { UserDocument } from './users.interface';
 import { USER_MODEL } from './users.schema';
-// import { MailerService } from '@nestjs-modules/mailer';
+import { MailerService } from '@nestjs-modules/mailer';
 import { PaginateModel } from 'mongoose-paginate-v2';
 import * as bcrypt from 'bcrypt';
 import { paginationTransformer } from 'src/common/helpers';
@@ -18,12 +24,15 @@ import { CreateRequest, Role, Status } from 'src/common/common.constants';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { CreateRequestDto } from './dto/update-request.dto';
 import { AdminFindUserDto } from './dto/find-user.dto';
+import IJwtPayload from '../auth/payloads/jwt-payload';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(USER_MODEL)
-    private readonly userModel: PaginateModel<UserDocument>, // private readonly mailerService: MailerService,
+    private readonly userModel: PaginateModel<UserDocument>,
+    private readonly mailerService: MailerService,
   ) {}
 
   async userSignUp(createUserDto: CreateUserDto) {
@@ -42,20 +51,22 @@ export class UsersService {
     user.salt = salt;
     user.password = hashPassword;
     user.createRequest = CreateRequest.Wait;
-    user.status = Status.Active;
+    user.updatedPasswordAt = Date.now();
+    const code = Math.floor(Math.random() * Math.pow(10, 6)).toString();
+    user.code = code;
+
     await user.save();
 
-    const code = Math.floor(1000 + Math.random() * 9000).toString();
-    // const options = {
-    //   subject: 'Welcome to GVC Management',
-    //   template: 'user-create',
-    //   context: {
-    //     username: createUserDto.email,
-    //     password: createUserDto.password,
-    //     scmURL: `http://localhost:3000/verify/${code}`,
-    //   },
-    // };
-    // await this.sendMailToUser(createUserDto.email, options);
+    const options = {
+      subject: 'Welcome to GVC Management',
+      template: 'user-create',
+      context: {
+        username: createUserDto.username,
+        password: createUserDto.password,
+        code: code,
+      },
+    };
+    await this.sendMailToUser(createUserDto.email, options);
     return {
       message: `Thanks for signing up. Please wait for admin to approve your account.`,
     };
@@ -78,11 +89,23 @@ export class UsersService {
     user.password = hashPassword;
     user.role = Role.Admin;
     user.status = Status.Active;
+    user.updatedPasswordAt = Date.now();
     await user.save();
   }
 
-  async findOne(id: string) {
-    const user = await this.userModel.findOne({ _id: id });
+  async findOne(payload: IJwtPayload) {
+    const user = await this.userModel.findOne({
+      username: payload.username,
+      email: payload.email,
+    });
+    if (!user) {
+      throw new NotFoundException(UserResponseMessage.NotFound);
+    }
+    return user;
+  }
+
+  async findById(id: string) {
+    const user = await this.userModel.findById(id);
     if (!user) {
       throw new NotFoundException(UserResponseMessage.NotFound);
     }
@@ -118,12 +141,112 @@ export class UsersService {
     await this.userModel.updateOne({ _id: id }, updateUserDto);
   }
 
+  async changePassword(
+    id: string,
+    updatedPasswordAt: Date,
+    updatePasswordDto: UpdatePasswordDto,
+  ) {
+    const user = await this.userModel.findById(id);
+    if (!user) {
+      throw new NotFoundException(UserResponseMessage.NotFound);
+    }
+    updatedPasswordAt = new Date(updatedPasswordAt);
+    if (user.updatedPasswordAt.getTime() !== updatedPasswordAt.getTime()) {
+      throw new BadRequestException(UserResponseMessage.CanNotChangePassword);
+    }
+    const validatePassword = await this.validatePassword(
+      updatePasswordDto.password,
+      user.password,
+    );
+    if (!validatePassword) {
+      throw new BadRequestException(UserResponseMessage.InvalidPassword);
+    }
+    const { salt, hashPassword } = await this.hashPassword(
+      updatePasswordDto.password,
+    );
+    user.salt = salt;
+    user.password = hashPassword;
+    user.updatedPasswordAt = Date.now();
+    await user.save();
+  }
+
   async delete(id: string) {
     const user = await this.userModel.findByIdAndDelete(id);
     if (!user) {
       throw new NotFoundException(UserResponseMessage.NotFound);
     }
   }
+
+  // async sendVerifyCode(sendVerifyCode: SendVerifyCode) {
+  //   const user = await this.userModel.findOne({
+  //     username: sendVerifyCode.username,
+  //   });
+  //   if (!user) {
+  //     throw new NotFoundException(UserResponseMessage.NotFound);
+  //   }
+  //   if (user.status === Status.Active) {
+  //     throw new BadRequestException(UserResponseMessage.Verified);
+  //   }
+  //   const code = Math.floor(Math.random() * Math.pow(10, 6)).toString();
+  //   user.code = code;
+
+  //   await user.save();
+
+  //   const options = {
+  //     subject: 'Verify Code',
+  //     template: 'send-verify-code',
+  //     context: {
+  //       code: code,
+  //     },
+  //   };
+  //   await this.sendMailToUser(user.email, options);
+  //   return {
+  //     message: `Send reset code successful.`,
+  //   };
+  // }
+
+  // async verifyAccount(verifyEmail: VerifyEmail) {
+  //   const user = await this.userModel.findOne({
+  //     username: verifyEmail.username,
+  //     code: verifyEmail.code,
+  //   });
+  //   if (!user) {
+  //     throw new NotFoundException(UserResponseMessage.NotFound);
+  //   }
+  //   user.status = Status.Active;
+  //   user.code = '';
+  //   await user.save();
+
+  //   return { message: `${UserResponseMessage.VerifyEmailSuccess}` };
+  // }
+
+  // async sendForgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+  //   const user = await this.userModel.findOne({
+  //     username: forgotPasswordDto.username,
+  //     email: forgotPasswordDto.email,
+  //   });
+  //   if (!user) {
+  //     throw new NotFoundException(UserResponseMessage.NotFound);
+  //   }
+  //   const code = Math.floor(Math.random() * Math.pow(10, 6)).toString();
+  //   user.code = code;
+
+  //   await user.save();
+
+  //   console.log(user);
+
+  //   const options = {
+  //     subject: 'GVC Reset Password',
+  //     template: 'user-reset-password',
+  //     context: {
+  //       code: code,
+  //     },
+  //   };
+  //   await this.sendMailToUser(user.email, options);
+  //   return {
+  //     message: `Send reset code successful.`,
+  //   };
+  // }
 
   async updateCreateRequest(id: string, createRequestDto: CreateRequestDto) {
     await this.userModel.updateOne(
@@ -157,20 +280,20 @@ export class UsersService {
     return this.userModel.findOne({ email, username });
   }
 
-  // async sendMailToUser(email: string, options): Promise<any> {
-  //   return this.mailerService
-  //     .sendMail({
-  //       to: email,
-  //       from: process.env.MAIL_USERNAME,
-  //       subject: options.subject,
-  //       template: `./${options.template}`,
-  //       context: options.context,
-  //     })
-  //     .then((res) => {
-  //       console.log('Send mail success to user');
-  //     })
-  //     .catch((err) => {
-  //       console.log('Error while sending mail to carrier', err);
-  //     });
-  // }
+  async sendMailToUser(email: string, options): Promise<any> {
+    return this.mailerService
+      .sendMail({
+        to: email,
+        from: process.env.MAIL_USERNAME,
+        subject: options.subject,
+        template: `./${options.template}`,
+        context: options.context,
+      })
+      .then((res) => {
+        console.log('Send mail success to user');
+      })
+      .catch((err) => {
+        console.log('Error while sending mail to carrier', err);
+      });
+  }
 }

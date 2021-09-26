@@ -19,6 +19,7 @@ export interface IUser {
   createRequest?: CreateRequest;
   role?: Role;
   updatedPasswordAt?: Date;
+  code: string;
 }
 
 export type UserDocument = IUser & Document;

@@ -5,8 +5,8 @@ import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthAdminService } from './auth.admin.service';
 import { AdminUserController } from './auth.admin.controller';
-import { VerifyAdminStrategy } from './strategies/verify-admin.strategy';
-import { VerifyUserStrategy } from './strategies/verify-user.strategy';
+import { JwtStrategy } from './strategies/jwt-strategy';
+import { RolesGuard } from 'src/common/guards/role.guard';
 
 @Module({
   imports: [
@@ -21,11 +21,7 @@ import { VerifyUserStrategy } from './strategies/verify-user.strategy';
     }),
   ],
   controllers: [AuthUserController, AdminUserController],
-  providers: [
-    AuthUserService,
-    AuthAdminService,
-    VerifyAdminStrategy,
-    VerifyUserStrategy,
-  ],
+  exports: [AuthUserService],
+  providers: [AuthUserService, AuthAdminService, JwtStrategy, RolesGuard],
 })
 export class AuthModule {}

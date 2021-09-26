@@ -1,10 +1,14 @@
 import {
+  IsAlphanumeric,
   IsDateString,
+  IsDefined,
   IsEmail,
   IsEnum,
+  IsNotEmpty,
   IsNumberString,
   IsOptional,
   IsString,
+  MinLength,
 } from 'class-validator';
 import { Gender } from 'src/common/common.constants';
 
@@ -39,4 +43,30 @@ export class UpdateUserDto {
   @IsString()
   @IsDateString()
   dateOfBirth: Date;
+}
+
+export class UpdatePasswordDto {
+  @IsNotEmpty()
+  @IsString()
+  password: string;
+
+  @IsNotEmpty()
+  @IsDefined()
+  @IsString()
+  @MinLength(6)
+  @IsAlphanumeric()
+  newPassword: string;
+}
+
+export class VerifyEmail {
+  @IsString()
+  username: string;
+
+  @IsString()
+  code: string;
+}
+
+export class SendVerifyCode {
+  @IsString()
+  username: string;
 }
