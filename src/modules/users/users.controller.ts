@@ -38,7 +38,7 @@ export class UsersController {
 
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
-  @Get(':id')
+  @Get('profile')
   findOne(@GetUser() payload: IJwtPayload) {
     return this.usersService.findOne(payload);
   }
