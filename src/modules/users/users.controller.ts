@@ -26,15 +26,10 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // @Post('send-verify-code')
-  // sendVerifyCode(@Body() sendVerifyCode: SendVerifyCode) {
-  //   return this.usersService.sendVerifyCode(sendVerifyCode);
-  // }
-
-  // @Post('forgot-password')
-  // sendForgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-  //   return this.usersService.sendForgotPassword(forgotPasswordDto);
-  // }
+  @Post('forgot-password')
+  sendForgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.usersService.sendForgotPassword(forgotPasswordDto);
+  }
 
   @ApiBearerAuth()
   @UseGuards(JwtGuard)

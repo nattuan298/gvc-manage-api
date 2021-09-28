@@ -52,10 +52,7 @@ export class UsersService {
     user.password = hashPassword;
     user.createRequest = CreateRequest.Wait;
     user.updatedPasswordAt = Date.now();
-    const code = Math.floor(Math.random() * Math.pow(10, 6)).toString();
-    user.code = code;
-
-    await user.save();
+    user.code = '';
 
     const options = {
       subject: 'Welcome to GVC Management',
@@ -63,10 +60,13 @@ export class UsersService {
       context: {
         username: createUserDto.username,
         password: createUserDto.password,
-        code: code,
       },
     };
-    await this.sendMailToUser(createUserDto.email, options);
+
+    await Promise.all([
+      user.save(),
+      this.sendMailToUser(createUserDto.email, options),
+    ]);
     return {
       message: `Thanks for signing up. Please wait for admin to approve your account.`,
     };
@@ -162,7 +162,7 @@ export class UsersService {
       throw new BadRequestException(UserResponseMessage.InvalidPassword);
     }
     const { salt, hashPassword } = await this.hashPassword(
-      updatePasswordDto.password,
+      updatePasswordDto.newPassword,
     );
     user.salt = salt;
     user.password = hashPassword;
@@ -220,39 +220,48 @@ export class UsersService {
   //   return { message: `${UserResponseMessage.VerifyEmailSuccess}` };
   // }
 
-  // async sendForgotPassword(forgotPasswordDto: ForgotPasswordDto) {
-  //   const user = await this.userModel.findOne({
-  //     username: forgotPasswordDto.username,
-  //     email: forgotPasswordDto.email,
-  //   });
-  //   if (!user) {
-  //     throw new NotFoundException(UserResponseMessage.NotFound);
-  //   }
-  //   const code = Math.floor(Math.random() * Math.pow(10, 6)).toString();
-  //   user.code = code;
+  async sendForgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    const user = await this.userModel.findOne({
+      username: forgotPasswordDto.username,
+      email: forgotPasswordDto.email,
+    });
+    if (!user) {
+      throw new NotFoundException(UserResponseMessage.NotFound);
+    }
+    const code = Math.floor(Math.random() * Math.pow(10, 6)).toString();
+    user.code = code;
 
-  //   await user.save();
+    console.log(forgotPasswordDto, user);
 
-  //   console.log(user);
-
-  //   const options = {
-  //     subject: 'GVC Reset Password',
-  //     template: 'user-reset-password',
-  //     context: {
-  //       code: code,
-  //     },
-  //   };
-  //   await this.sendMailToUser(user.email, options);
-  //   return {
-  //     message: `Send reset code successful.`,
-  //   };
-  // }
+    const options = {
+      subject: 'Forgot Password!',
+      template: 'send-verify-code',
+      context: {
+        code,
+      },
+    };
+    await Promise.all([
+      user.save(),
+      this.sendMailToUser(forgotPasswordDto.email, options),
+    ]);
+    return {
+      message: `Send reset code successful.`,
+    };
+  }
 
   async updateCreateRequest(id: string, createRequestDto: CreateRequestDto) {
-    await this.userModel.updateOne(
+    const user = await this.userModel.findByIdAndUpdate(
       { _id: id },
       { createRequest: createRequestDto.createRequest },
     );
+    if (createRequestDto.createRequest === CreateRequest.Approve) {
+      const options = {
+        subject: 'Approve Account!',
+        template: 'approve-account',
+      };
+
+      await this.sendMailToUser(user.email, options);
+    }
   }
 
   async getUserByUsername(username: string): Promise<any> {
