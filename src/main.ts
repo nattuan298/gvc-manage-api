@@ -12,7 +12,12 @@ async function bootstrap() {
     .setDescription('The Back-end Template API description')
     .setVersion('1.0')
     .addTag('template')
-    .addBearerAuth({ type: 'apiKey', name: 'Authorization', in: 'header' })
+    .addBearerAuth({
+      type: 'http',
+      name: 'Authorization',
+      in: 'header',
+    })
+
     .build();
 
   const document = SwaggerModule.createDocument(app, options);

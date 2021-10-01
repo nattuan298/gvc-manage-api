@@ -14,6 +14,7 @@ import { JwtGuard } from 'src/common/guards/jwt-guard';
 import IJwtPayload from '../auth/payloads/jwt-payload';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import {
+  RecoveryPassword,
   SendVerifyCode,
   UpdatePasswordDto,
   UpdateUserDto,
@@ -42,6 +43,11 @@ export class UsersController {
   // verifyEmail(@Body() verifyEmail: VerifyEmail) {
   //   return this.usersService.verifyAccount(verifyEmail);
   // }
+
+  @Put('recovery-password')
+  recoveryPassword(@Body() recoveryPassword: RecoveryPassword) {
+    return this.usersService.recoveryPass(recoveryPassword);
+  }
 
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
