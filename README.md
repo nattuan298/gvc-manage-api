@@ -61,5 +61,5 @@ $ npm run test:cov
 ## Stay in touch
 
 - Author - [N A T](https://www.facebook.com/natuan.298/)
-- LinkedIn - [N A T](www.linkedin.com/in/natuan2908)
+- LinkedIn - [N A T](https://www.linkedin.com/in/natuan2908)
 
