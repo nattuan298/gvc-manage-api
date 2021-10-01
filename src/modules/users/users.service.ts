@@ -8,6 +8,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import {
+  RecoveryPassword,
   SendVerifyCode,
   UpdatePasswordDto,
   UpdateUserDto,
@@ -231,11 +232,9 @@ export class UsersService {
     const code = Math.floor(Math.random() * Math.pow(10, 6)).toString();
     user.code = code;
 
-    console.log(forgotPasswordDto, user);
-
     const options = {
       subject: 'Forgot Password!',
-      template: 'send-verify-code',
+      template: 'user-change-password', //send-verify-code
       context: {
         code,
       },
@@ -249,11 +248,32 @@ export class UsersService {
     };
   }
 
+  async recoveryPass(recoveryPassword: RecoveryPassword) {
+    const user = await this.userModel.findOne({ code: recoveryPassword.code });
+    if (!user) {
+      throw new NotFoundException(UserResponseMessage.NotFound);
+    }
+    const { salt, hashPassword } = await this.hashPassword(
+      recoveryPassword.password,
+    );
+    user.salt = salt;
+    user.password = hashPassword;
+    user.updatedPasswordAt = Date.now();
+    user.code = '';
+    await user.save();
+    return {
+      message: `Recovery password successful.`,
+    };
+  }
+
   async updateCreateRequest(id: string, createRequestDto: CreateRequestDto) {
     const user = await this.userModel.findByIdAndUpdate(
       { _id: id },
       { createRequest: createRequestDto.createRequest },
     );
+    if (!user) {
+      throw new NotFoundException(UserResponseMessage.NotFound);
+    }
     if (createRequestDto.createRequest === CreateRequest.Approve) {
       const options = {
         subject: 'Approve Account!',

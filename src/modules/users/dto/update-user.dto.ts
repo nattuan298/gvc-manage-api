@@ -53,7 +53,7 @@ export class UpdatePasswordDto {
   @IsNotEmpty()
   @IsDefined()
   @IsString()
-  @MinLength(6)
+  @MinLength(8)
   @IsAlphanumeric()
   newPassword: string;
 }
@@ -69,4 +69,16 @@ export class VerifyEmail {
 export class SendVerifyCode {
   @IsString()
   username: string;
+}
+
+export class RecoveryPassword {
+  @IsString()
+  code: string;
+
+  @IsNotEmpty()
+  @IsDefined()
+  @IsString()
+  @MinLength(8)
+  @IsAlphanumeric()
+  password: string;
 }

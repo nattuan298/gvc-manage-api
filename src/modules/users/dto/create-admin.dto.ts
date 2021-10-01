@@ -18,7 +18,7 @@ export class CreateAdminDto {
   @IsNotEmpty()
   @IsDefined()
   @IsString()
-  @MinLength(6)
+  @MinLength(8)
   @IsAlphanumeric()
   password: string;
 
