@@ -145,6 +145,13 @@ export class UsersService {
       const keyword = new RegExp(findUserDto.keyword.trim(), 'i');
       filters.username = keyword;
     }
+
+    if (findUserDto.startDate && findUserDto.endDate) {
+      filters.dateOfBirth = {
+        $gte: findUserDto.startDate,
+        $lt: findUserDto.endDate,
+      };
+    }
     const users = await this.userModel.paginate(filters, options);
     return paginationTransformer(users);
   }
