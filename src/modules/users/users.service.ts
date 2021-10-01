@@ -38,10 +38,18 @@ export class UsersService {
 
   async userSignUp(createUserDto: CreateUserDto) {
     createUserDto.username = createUserDto.username.trim().toLowerCase();
-    const regex = new RegExp(`^${createUserDto.username}$`);
+    createUserDto.email = createUserDto.email.trim().toLowerCase();
+
+    const regexUsername = new RegExp(`^${createUserDto.username}$`);
+    const regexEmail = new RegExp(`^${createUserDto.email}$`);
+
     const existingUser = await this.userModel.findOne({
-      username: { $regex: regex, $options: 'i' },
+      $or: [
+        { username: { $regex: regexUsername, $options: 'i' } },
+        { email: { $regex: regexEmail, $options: 'i' } },
+      ],
     });
+
     if (existingUser) {
       throw new ConflictException(UserResponseMessage.AlreadyExist);
     }
@@ -75,9 +83,16 @@ export class UsersService {
 
   async adminSignUp(createAdminDto: CreateAdminDto) {
     createAdminDto.username = createAdminDto.username.trim().toLowerCase();
-    const regex = new RegExp(`^${createAdminDto.username}$`);
+    createAdminDto.email = createAdminDto.email.trim().toLowerCase();
+
+    const regexUsername = new RegExp(`^${createAdminDto.username}$`);
+    const regexEmail = new RegExp(`^${createAdminDto.email}$`);
+
     const existingUser = await this.userModel.findOne({
-      username: { $regex: regex, $options: 'i' },
+      $or: [
+        { username: { $regex: regexUsername, $options: 'i' } },
+        { email: { $regex: regexEmail, $options: 'i' } },
+      ],
     });
     if (existingUser) {
       throw new ConflictException(UserResponseMessage.AlreadyExist);

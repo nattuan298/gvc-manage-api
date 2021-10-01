@@ -14,6 +14,7 @@ export interface IUser {
   phoneNumber: string;
   generation: string;
   gender: Gender;
+  avatar: string;
   dateOfBirth: Date;
   status?: Status;
   createRequest?: CreateRequest;

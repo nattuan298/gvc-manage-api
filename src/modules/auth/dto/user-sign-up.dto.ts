@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsAlphanumeric,
   IsDateString,
@@ -42,6 +43,10 @@ export class UserSignUpDto {
   @IsDefined()
   @IsPhoneNumber()
   phoneNumber: string;
+
+  @ApiProperty({ example: 'avatar/avatar1.png' })
+  @IsString()
+  avatar: string;
 
   @IsString()
   generation: string;
