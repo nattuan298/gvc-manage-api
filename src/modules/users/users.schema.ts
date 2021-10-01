@@ -25,6 +25,10 @@ const UserSchema = new mongoose.Schema(
       type: String,
       enum: Object.values(Gender),
     },
+    avatar: {
+      type: String,
+      default: 'avatar/avatar1.png',
+    },
     dateOfBirth: Date,
     salt: String,
     status: {

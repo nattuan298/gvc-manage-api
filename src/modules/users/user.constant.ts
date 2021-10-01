@@ -1,5 +1,5 @@
 export enum UserResponseMessage {
-  AlreadyExist = `Username already existed.`,
+  AlreadyExist = `Username or Email already existed.`,
   NotFound = `User is not found.`,
   InvalidPassword = `Invalid password.`,
   CanNotChangePassword = `You cannot change password.`,

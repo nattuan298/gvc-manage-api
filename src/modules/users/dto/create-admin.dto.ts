@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsAlphanumeric,
   IsDefined,
@@ -31,4 +32,8 @@ export class CreateAdminDto {
   @IsNotEmpty()
   @IsNumberString()
   phoneNumber: string;
+
+  @ApiProperty({ example: 'avatar/avatar1.png' })
+  @IsString()
+  avatar: string;
 }
