@@ -18,7 +18,9 @@ export class AuthUserService {
   }
 
   async userSingIn(userSignInDto: UserSignInDto) {
-    const { username, password } = userSignInDto;
+    let { username, password } = userSignInDto;
+    username = username.trim().toLowerCase();
+    password = password.trim();
     const user = await this.usersService.getUserByUsername(username);
     if (user) {
       if (user.createRequest === CreateRequest.Wait) {
