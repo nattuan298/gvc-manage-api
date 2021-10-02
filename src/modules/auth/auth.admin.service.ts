@@ -18,7 +18,10 @@ export class AuthAdminService {
   }
 
   async adminSingIn(adminSignInDto: AdminSignInDto) {
-    const { username, password } = adminSignInDto;
+    let { username, password } = adminSignInDto;
+    username = username.trim().toLowerCase();
+    password = password.trim();
+
     const user = await this.usersService.getUserByUsername(username);
     if (user) {
       if (

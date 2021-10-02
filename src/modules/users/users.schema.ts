@@ -29,6 +29,10 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: 'avatar/avatar1.png',
     },
+    beltLevel: {
+      type: String,
+      default: '',
+    },
     dateOfBirth: Date,
     salt: String,
     status: {
