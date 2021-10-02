@@ -256,7 +256,7 @@ export class UsersService {
 
     const options = {
       subject: 'Forgot Password!',
-      template: 'user-change-password', //send-verify-code
+      template: 'send-otp-code',
       context: {
         code,
       },
