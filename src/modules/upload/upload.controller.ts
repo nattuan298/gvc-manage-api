@@ -2,41 +2,43 @@ import {
   Controller,
   Get,
   Post,
+  UploadedFile,
+  UseInterceptors,
+  Query,
   Body,
-  Patch,
-  Param,
   Delete,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
 import { UploadService } from './upload.service';
-import { CreateUploadDto } from './dto/create-upload.dto';
-import { UpdateUploadDto } from './dto/update-upload.dto';
+import { Express } from 'express';
+import { FolderUploadDto } from './dto/upload.dto';
 
+@ApiTags('upload')
 @Controller('upload')
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
   @Post()
-  create(@Body() createUploadDto: CreateUploadDto) {
-    return this.uploadService.create(createUploadDto);
+  @UseInterceptors(FileInterceptor('file'))
+  uploadFile(
+    @Body() folderUploadDto: FolderUploadDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.uploadService.uploadPublicFile(
+      folderUploadDto.folder,
+      file.buffer,
+      file.originalname,
+    );
   }
 
   @Get()
-  findAll() {
-    return this.uploadService.findAll();
+  getSignedUrl(@Query('key') key: string) {
+    return this.uploadService.getSignedUrl(key);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.uploadService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUploadDto: UpdateUploadDto) {
-    return this.uploadService.update(+id, updateUploadDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.uploadService.remove(+id);
+  @Delete()
+  deleteFile(@Query('key') key: string) {
+    return this.uploadService.deletePublicFile(key);
   }
 }

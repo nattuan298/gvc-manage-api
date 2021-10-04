@@ -48,6 +48,10 @@ export class UpdateUserDto {
   @IsString()
   @IsDateString()
   dateOfBirth: Date;
+
+  @IsOptional()
+  @IsString()
+  avatar: string;
 }
 
 export class UpdatePasswordDto {
