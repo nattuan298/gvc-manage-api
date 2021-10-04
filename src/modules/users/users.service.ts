@@ -27,6 +27,7 @@ import { CreateRequestDto } from './dto/update-request.dto';
 import { AdminFindUserDto } from './dto/find-user.dto';
 import IJwtPayload from '../auth/payloads/jwt-payload';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { UploadService } from '../upload/upload.service';
 
 @Injectable()
 export class UsersService {
@@ -34,6 +35,7 @@ export class UsersService {
     @InjectModel(USER_MODEL)
     private readonly userModel: PaginateModel<UserDocument>,
     private readonly mailerService: MailerService,
+    private readonly uploadService: UploadService,
   ) {}
 
   async userSignUp(createUserDto: CreateUserDto) {
@@ -117,6 +119,9 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(UserResponseMessage.NotFound);
     }
+    if (user.avatart.length >= 1) {
+      user.avatar = this.uploadService.getSignedUrl(user.avatar);
+    }
     return user;
   }
 
@@ -124,6 +129,9 @@ export class UsersService {
     const user = await this.userModel.findById(id);
     if (!user) {
       throw new NotFoundException(UserResponseMessage.NotFound);
+    }
+    if (user.avatart.length >= 1) {
+      user.avatar = this.uploadService.getSignedUrl(user.avatar);
     }
     return user;
   }
@@ -153,6 +161,11 @@ export class UsersService {
       };
     }
     const users = await this.userModel.paginate(filters, options);
+    users.docs.map((user: any) => {
+      if (user.avatar.length >= 1) {
+        user.avatar = this.uploadService.getSignedUrl(user.avatar);
+      }
+    });
     return paginationTransformer(users);
   }
 
@@ -160,6 +173,11 @@ export class UsersService {
     const user = await this.userModel.findById(id);
     if (!user) {
       throw new NotFoundException(UserResponseMessage.NotFound);
+    }
+    if (updateUserDto.avatar) {
+      if (updateUserDto.avatar !== user.avatar) {
+        await this.uploadService.deletePublicFile(user.avatar);
+      }
     }
     await this.userModel.updateOne({ _id: id }, updateUserDto);
   }

@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
+import { config } from 'aws-sdk';
 dotenv.config();
 
 async function bootstrap() {
@@ -22,6 +23,13 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api/docs', app, document);
+
+  // Config AWS
+  config.update({
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_KEY,
+    region: process.env.AWS_REGION,
+  });
 
   // Use global validation pipe.
   app.useGlobalPipes(new ValidationPipe({ transform: true }));

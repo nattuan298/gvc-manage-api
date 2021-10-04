@@ -6,6 +6,7 @@ import {
   Role,
   CreateRequest,
 } from 'src/common/common.constants';
+import { defaultAvatar } from './user.constant';
 
 const USER_MODEL = 'users';
 
@@ -27,7 +28,7 @@ const UserSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
-      default: 'avatar/avatar1.png',
+      default: defaultAvatar,
     },
     beltLevel: {
       type: String,

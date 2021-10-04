@@ -4,6 +4,7 @@ import { UsersController } from './users.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema, USER_MODEL } from './users.schema';
 import { AdminController } from './admin.controller';
+import { UploadModule } from '../upload/upload.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { AdminController } from './admin.controller';
         schema: UserSchema,
       },
     ]),
+    UploadModule,
   ],
   controllers: [UsersController, AdminController],
   providers: [UsersService],

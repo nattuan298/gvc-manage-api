@@ -1,26 +1,42 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUploadDto } from './dto/create-upload.dto';
-import { UpdateUploadDto } from './dto/update-upload.dto';
-
+import { S3 } from 'aws-sdk';
+import { uuid } from 'uuidv4';
 @Injectable()
 export class UploadService {
-  create(createUploadDto: CreateUploadDto) {
-    return 'This action adds a new upload';
+  private readonly EXPIRES = 60 * 10;
+  private readonly BUCKET: string = process.env.S3_BUCKET_NAME;
+
+  async uploadPublicFile(folder: string, dataBuffer: Buffer, filename: string) {
+    const s3 = new S3();
+    const { Key, Location } = await s3
+      .upload({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Body: dataBuffer,
+        Key: `${folder}/${uuid()}-${filename}`,
+      })
+      .promise();
+    return { Key, Location };
   }
 
-  findAll() {
-    return `This action returns all upload`;
+  getSignedUrl(Key: string) {
+    const s3 = new S3({
+      accessKeyId: process.env.AWS_ACCESS_KEY,
+      secretAccessKey: process.env.AWS_SECRET_KEY,
+    });
+    return s3.getSignedUrl('getObject', {
+      Bucket: this.BUCKET,
+      Key,
+      Expires: this.EXPIRES,
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} upload`;
-  }
-
-  update(id: number, updateUploadDto: UpdateUploadDto) {
-    return `This action updates a #${id} upload`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} upload`;
+  async deletePublicFile(key: string) {
+    const s3 = new S3();
+    await s3
+      .deleteObject({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: key,
+      })
+      .promise();
   }
 }
