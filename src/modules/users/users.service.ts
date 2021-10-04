@@ -20,7 +20,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { PaginateModel } from 'mongoose-paginate-v2';
 import * as bcrypt from 'bcrypt';
 import { paginationTransformer } from 'src/common/helpers';
-import { UserResponseMessage } from './user.constant';
+import { defaultAvatar, UserResponseMessage } from './user.constant';
 import { CreateRequest, Role, Status } from 'src/common/common.constants';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { CreateRequestDto } from './dto/update-request.dto';
@@ -175,7 +175,10 @@ export class UsersService {
       throw new NotFoundException(UserResponseMessage.NotFound);
     }
     if (updateUserDto.avatar) {
-      if (updateUserDto.avatar !== user.avatar) {
+      if (
+        updateUserDto.avatar !== user.avatar &&
+        user.avatart !== defaultAvatar
+      ) {
         await this.uploadService.deletePublicFile(user.avatar);
       }
     }
