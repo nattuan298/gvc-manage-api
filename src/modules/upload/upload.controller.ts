@@ -29,6 +29,7 @@ export class UploadController {
       folderUploadDto.folder,
       file.buffer,
       file.originalname,
+      file.mimetype,
     );
   }
 
