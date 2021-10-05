@@ -119,7 +119,7 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(UserResponseMessage.NotFound);
     }
-    if (user.avatart.length >= 1) {
+    if (user.avatar.length >= 1) {
       user.avatar = this.uploadService.getSignedUrl(user.avatar);
     }
     return user;
@@ -130,7 +130,7 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(UserResponseMessage.NotFound);
     }
-    if (user.avatart.length >= 1) {
+    if (user.avatar.length >= 1) {
       user.avatar = this.uploadService.getSignedUrl(user.avatar);
     }
     return user;
